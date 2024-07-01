@@ -37,7 +37,7 @@ app.post('/sms', async (req, res) => {
     try {
         if (message.startsWith('REGISTER ')) {
             const NIN = message.split(' ')[1];
-            const response = await axios.get(`http://localhost:4000/nimc/${NIN}`);
+            const response = await axios.get(`https://buzz-nin-api.vercel.app/nimc/${NIN}`);
             // const response = await axios.get(`${process.env.NIMC_API_URL}/${NIN}`);
             const userDetails = response.data;
 
