@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
     NIN: String,
     name: String,
     phoneNumber: String,
+    accNumber: String,
     balance: Number,
 });
 
@@ -38,26 +39,26 @@ app.post('/sms', async (req, res) => {
         if (message.startsWith('REGISTER ')) {
             const NIN = message.split(' ')[1];
             const response = await axios.get(`https://buzz-nin-api.vercel.app/nimc/${NIN}`);
-            // const response = await axios.get(`${process.env.NIMC_API_URL}/${NIN}`);
             const userDetails = response.data;
 
             const newUser = new User({
                 NIN: userDetails.NIN,
                 name: userDetails.name,
                 phoneNumber: From,
+                accNumber: userDetails.NIN,
                 balance: 10000,
             });
 
             await newUser.save();
 
             await client.messages.create({
-                body: `Welcome ${userDetails.name}, your account has been created with a balance of ${userDetails.balance}`,
+                body: `Welcome ${userDetails.name}, You have successfully created an account with us. Your account has been created with a balance of ${userDetails.balance}. Thank you for choosing our bank`,
                 from: process.env.TWILIO_PHONE_NUMBER,
                 to: From,
             });
 
-            console.log(`Welcome ${userDetails.name}, your account has been created with a balance of ${userDetails.balance}`)
-            res.sendStatus(200);
+            console.log(`Welcome ${userDetails.name}, You have successfully created an account with us. Your account has been created with a balance of ${userDetails.balance}. Thank you for choosing our bank`)
+            res.send({message: `Welcome ${userDetails.name}, You have successfully created an account with us. Your account has been created with a balance of ${userDetails.balance}. Thank you for choosing our bank`});
         } else if (message === 'BALANCE') {
             const user = await User.findOne({ phoneNumber: From });
 
@@ -76,12 +77,14 @@ app.post('/sms', async (req, res) => {
                 });
             }
 
-            res.sendStatus(200);
+            res.send({message: `Your current balance is #${user.balance.toFixed(2)}`});
         } else if (message.startsWith('TRANSFER ')) {
-            const [_, amount, recipientPhone] = message.split(' ');
+            const [_, amount, accNumber] = message.split(' ');
 
             const sender = await User.findOne({ phoneNumber: From });
-            const recipient = await User.findOne({ phoneNumber: recipientPhone });
+            const recipient = await User.findOne({ accNumber: accNumber });
+
+            console.log(sender)
 
             if (sender && recipient && sender.balance >= parseFloat(amount)) {
                 sender.balance -= parseFloat(amount);
@@ -104,7 +107,8 @@ app.post('/sms', async (req, res) => {
 
                 console.log(`You have transferred #${parseFloat(amount).toFixed(2)} to ${recipient.name}. Your new balance is #${sender.balance.toFixed(2)}`)
                 console.log(`You have received #${parseFloat(amount).toFixed(2)} from ${sender.name}. Your new balance is #${recipient.balance.toFixed(2)}`)
-                res.sendStatus(200);
+                
+                res.send([{senderMessage: `You have transferred #${parseFloat(amount).toFixed(2)} to ${recipient.name}. Your new balance is #${sender.balance.toFixed(2)}`}, {recepientMessage: `You have received #${parseFloat(amount).toFixed(2)} from ${sender.name}. Your new balance is #${recipient.balance.toFixed(2)}`}]);
             } else {
                 await client.messages.create({
                     body: 'Transfer failed. Please check your balance and try again.',
