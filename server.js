@@ -99,11 +99,11 @@ app.post('/sms', async (req, res) => {
                     to: From,
                 });
 
-                await client.messages.create({
-                    body: `You have received #${parseFloat(amount).toFixed(2)} from ${sender.name}. Your new balance is #${recipient.balance.toFixed(2)}`,
-                    from: process.env.TWILIO_PHONE_NUMBER,
-                    to: recipientPhone,
-                });
+                // await client.messages.create({
+                //     body: `You have received #${parseFloat(amount).toFixed(2)} from ${sender.name}. Your new balance is #${recipient.balance.toFixed(2)}`,
+                //     from: process.env.TWILIO_PHONE_NUMBER,
+                //     to: recipient.phoneNumber,
+                // });
 
                 console.log(`You have transferred #${parseFloat(amount).toFixed(2)} to ${recipient.name}. Your new balance is #${sender.balance.toFixed(2)}`)
                 console.log(`You have received #${parseFloat(amount).toFixed(2)} from ${sender.name}. Your new balance is #${recipient.balance.toFixed(2)}`)
