@@ -52,13 +52,13 @@ app.post('/sms', async (req, res) => {
             await newUser.save();
 
             await client.messages.create({
-                body: `Welcome ${userDetails.name}, You have successfully created an account with us. Your account has been created with a balance of ${userDetails.balance}. Thank you for choosing our bank`,
+                body: `Welcome ${userDetails.name}, You have successfully created an account with us. Your account number is ${userDetails.NIN} and your account has been created with a balance of ${userDetails.balance}. Thank you for choosing our bank`,
                 from: process.env.TWILIO_PHONE_NUMBER,
                 to: From,
             });
 
             console.log(`Welcome ${userDetails.name}, You have successfully created an account with us. Your account has been created with a balance of ${userDetails.balance}. Thank you for choosing our bank`)
-            res.send({message: `Welcome ${userDetails.name}, You have successfully created an account with us. Your account has been created with a balance of ${userDetails.balance}. Thank you for choosing our bank`});
+            res.send({message: `Welcome ${userDetails.name}, You have successfully created an account with us. Your account number is ${userDetails.NIN} and your account has been created with a balance of ${userDetails.balance}. Thank you for choosing our bank`});
         } else if (message === 'BALANCE') {
             const user = await User.findOne({ phoneNumber: From });
 
