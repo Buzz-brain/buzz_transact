@@ -57,7 +57,7 @@ app.post('/sms', async (req, res) => {
                 to: From,
             });
 
-            console.log(`Welcome ${userDetails.name}, You have successfully created an account with us. Your account has been created with a balance of ${userDetails.balance}. Thank you for choosing our bank`)
+            console.log(`Welcome ${userDetails.name}, You have successfully created an account with us. Your account number is ${userDetails.NIN} and your account has been created with a balance of #10,000. Thank you for choosing our bank`)
             res.send({message: `Welcome ${userDetails.name}, You have successfully created an account with us. Your account number is ${userDetails.NIN} and your account has been created with a balance of #10,000. Thank you for choosing our bank`});
         } else if (message === 'BALANCE') {
             const user = await User.findOne({ phoneNumber: From });
